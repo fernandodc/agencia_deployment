@@ -1,0 +1,43 @@
+const express = require("express");
+const router = express.Router();
+const Viaje = require("../models/Viajes");
+
+router.get("/", function (req, res) {
+	res.render("index", { title: "Hey", message: "Hello there!" });
+});
+
+router.get("/nosotros", function (req, res) {
+	res.render("nosotros/index", {
+		title: "Nosotros",
+		pagina: "pagina en demo",
+	});
+});
+
+router.get("/viajes", function (req, res) {
+	Viaje.findAll()
+	.then((viajes) => {
+		res.render("viajes", {
+			title: "viajes",
+			pagina: "proximos viajes",
+			viajes: viajes,
+		});
+	})
+	.catch((error) => {
+		console.log("Error:", error);
+	});
+});
+
+router.get("/viajes/:id", function (req, res) {
+	Viaje.findById(req.params.id)
+	.then(viaje=>{
+		res.render("viaje", {
+			viaje
+		})
+
+	})
+	.catch(error=>{console.log(error)})
+
+
+});
+
+module.exports = router;

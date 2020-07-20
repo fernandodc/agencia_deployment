@@ -1,0 +1,47 @@
+const express = require("express");
+const app = express();
+const path = require("path");
+const bodyParser = require("body-parser");
+const configs = require("./config");
+
+/*
+db.authenticate()
+.then(()=>{
+console.log('Conexión exitosa');
+})
+.catch((err)=>{
+console.log('Error en db: ',err)
+})
+*/
+
+//Habilitar BodyParser
+app.use(bodyParser.urlencoded({ extended: true }));
+// Rutas
+const router = require("./routes");
+app.use("/", router);
+const config = configs[app.get("env")];
+app.locals.titulo = config.title;
+
+//Muestra el año actual y la ruta actual
+app.use((req, res, next) => {
+  const fecha = new Date();
+  res.locals.fechaActual = fecha.getFullYear();
+  res.locals.ruta = req.originalUrl;
+  console.log("Ruta: ", res.locals);
+  return next();
+});
+
+// Habilitar Pug
+app.set("view engine", "pug");
+//Añadir las vista
+app.set("views", path.join(__dirname, "views"));
+//app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "../", "/public")));
+
+const host=process.env.HOST || '0.0.0.0'
+const port=process.env.PORT || 3010
+
+
+app.listen(port, host, function () {
+  console.log("app iniciada en 3010");
+});
